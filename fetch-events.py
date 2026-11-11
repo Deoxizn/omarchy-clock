@@ -27,7 +27,7 @@ import urllib.request
 import zoneinfo
 from typing import Any, Iterator
 
-USER_AGENT = "deoxizn.clock/1.0 (Omarchy Shell Plugin)"
+USER_AGENT = "deoxizn.clock/1.0.1 (Omarchy Shell Plugin)"
 DEFAULT_CONFIG_PATH = os.path.expanduser("~/.config/deoxizn.clock/calendars.json")
 DEFAULT_CACHE_PATH = os.path.expanduser("~/.cache/deoxizn.clock/events.json")
 

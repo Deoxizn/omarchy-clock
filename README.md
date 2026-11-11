@@ -19,16 +19,6 @@ A shell bar clock for Omarchy that replaces the stock `omarchy.clock` widget. Ho
 | **Markdown copy** | Copy the selected day's agenda as structured Markdown (`y` hotkey or toolbar button). |
 | **Local events** | Create and delete private local events from the UI or CLI. Stored as standard RFC 5545 `.ics` at `~/.config/deoxizn.clock/local.ics`. |
 
-## Fork notes
-
-Forked from [greenermoose/clock-fred-tamlinux](https://github.com/greenermoose/clock-fred-tamlinux) (`fred.clock` 1.3.3, GPL-3.0-or-later). This fork restarts versioning at **1.0**. What changed:
-
-- Plugin id, config dir, and cache dir are now `deoxizn.clock` (`~/.config/deoxizn.clock/`, `~/.cache/deoxizn.clock/`).
-- Hover tooltip shows today's events instead of a `fred.clock v1.3.3` version stamp.
-- The version footer in the open panel is gone entirely. No version badging anywhere in the UI.
-- A sample `calendars.json` is created automatically on first run (see below).
-- Coming from `fred.clock`: your existing config and local events are migrated automatically on first run, nothing to re-enter.
-
 ## Installation
 
 If you are still running the upstream `fred.clock`, remove it first:

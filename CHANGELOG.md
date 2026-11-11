@@ -2,6 +2,14 @@
 
 All notable changes to `deoxizn.clock` will be documented in this file. Entries below 1.0 are the upstream `fred.clock` history, kept as-is.
 
+## [1.0.1] - 2026-11-11
+
+### Fixed
+- **Tooltip showed "No events today" on a fresh install**: the cache file often does not exist when the widget first loads, so the `FileView` change watch never fires for the first fetch and the tooltip stays empty until a shell restart. The widget now reloads its cache `FileView` whenever a fetch process exits, so the tooltip and badge pick fresh events up on their own.
+
+### Changed
+- Removed the README's fork-notes section; GitHub already shows the fork banner.
+
 ## [1.0] - 2026-11-11
 
 Fork of upstream `fred.clock` 1.3.3 (greenermoose/clock-fred-tamlinux). Versioning restarts at 1.0.

@@ -82,6 +82,11 @@ BarWidget {
     args: [Model.helperPath("fetch-events.py")]
     envKeys: root.pyEnv
     deadlineMs: 60000
+    // The cache file often does not exist when the widget first loads, so
+    // the FileView's change watch never fires for the first fetch. Reload
+    // the cache explicitly whenever a fetch finishes so the tooltip and
+    // badge pick the fresh events up.
+    onRunningChanged: if (!running) eventsCache.reload()
   }
 
   Launch {
