@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Unit tests for fred.clock manage-event.py.
+Unit tests for deoxizn.clock manage-event.py.
 """
 
 import datetime

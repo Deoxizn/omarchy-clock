@@ -12,9 +12,7 @@ import "Model.js" as Model
 // middle click opens the timezone picker.
 BarWidget {
   id: root
-  moduleName: "omarchy.clock"
-
-  readonly property string pluginVersion: "1.3.3"
+  moduleName: "deoxizn.clock"
 
   property date displayDate: clock.date
 
@@ -40,6 +38,37 @@ BarWidget {
   readonly property string fullLabel: countdownBadge !== ""
     ? displayText + " • " + countdownBadge
     : displayText
+
+  // Hover shows today's agenda instead of a version stamp: the date, each
+  // timed event with its start time, then a count of all-day events.
+  // Day matching mirrors Panel.qml's index: an event belongs to today when
+  // today falls between its dateKey and endDateKey.
+  readonly property string todayTooltip: {
+    var dateLabel = Qt.formatDate(displayDate, "ddd d MMM")
+    if (!eventsData || !eventsData.events) return dateLabel + "\nNo events today"
+    var key = Model.keyForDate(displayDate)
+    var lines = [dateLabel]
+    var allDayCount = 0
+    var evs = eventsData.events
+    for (var i = 0; i < evs.length; i++) {
+      var ev = evs[i]
+      var startKey = ev.dateKey || ""
+      var endKey = ev.endDateKey || startKey
+      if (startKey === "" || key < startKey || key > endKey) continue
+      if (ev.allDay) {
+        allDayCount++
+      } else if (startKey === key) {
+        var t = Qt.formatDateTime(new Date(ev.startTs * 1000), "h:mm AP")
+        lines.push(t + "  " + (ev.summary || "Event"))
+      } else {
+        lines.push("ongoing  " + (ev.summary || "Event"))
+      }
+    }
+    if (allDayCount === 1) lines.push("1 all-day event")
+    else if (allDayCount > 1) lines.push(allDayCount + " all-day events")
+    if (lines.length === 1) lines.push("No events today")
+    return lines.join("\n")
+  }
 
   readonly property string omarchyPath: Quickshell.env("OMARCHY_PATH") || ""
   readonly property var pyEnv: ["HOME", "TZ", "LANG", "XDG_CONFIG_HOME", "XDG_CACHE_HOME"]
@@ -85,7 +114,7 @@ BarWidget {
 
   FileView {
     id: calendarsConfig
-    path: Quickshell.env("HOME") + "/.config/fred.clock/calendars.json"
+    path: Quickshell.env("HOME") + "/.config/deoxizn.clock/calendars.json"
     watchChanges: true
     printErrors: false
     onFileChanged: root.runFetch()
@@ -93,7 +122,7 @@ BarWidget {
 
   FileView {
     id: localIcsWatcher
-    path: Quickshell.env("HOME") + "/.config/fred.clock/local.ics"
+    path: Quickshell.env("HOME") + "/.config/deoxizn.clock/local.ics"
     watchChanges: true
     printErrors: false
     onFileChanged: root.runFetch()
@@ -101,7 +130,7 @@ BarWidget {
 
   FileView {
     id: eventsCache
-    path: Quickshell.env("HOME") + "/.cache/fred.clock/events.json"
+    path: Quickshell.env("HOME") + "/.cache/deoxizn.clock/events.json"
     watchChanges: true
     printErrors: false
     onFileChanged: reload()
@@ -201,7 +230,7 @@ BarWidget {
 
   function broadcastClock(method) {
     var fn = bar ? (bar.moduleWidgets || bar._moduleWidgets) : null
-    var candidates = [root.moduleName, "fred.clock", "omarchy.clock"]
+    var candidates = [root.moduleName, "deoxizn.clock", "omarchy.clock"]
     var items = []
     for (var c = 0; c < candidates.length; c++) {
       if (typeof fn === "function") {
@@ -384,7 +413,7 @@ BarWidget {
   }
 
   IpcHandler {
-    target: "fred.clock"
+    target: "deoxizn.clock"
 
     function refresh(): void { root.broadcastClock("refresh") }
     function cycleFormat(): void { root.cycleFormat() }
@@ -412,10 +441,7 @@ BarWidget {
     anchors.fill: parent
     bar: root.bar
     text: root.vertical ? "" : root.fullLabel
-    tooltipText: {
-      var ver = "fred.clock v" + root.pluginVersion
-      return root.countdownBadge !== "" ? (root.countdownBadge + "\n\n" + ver) : ver
-    }
+    tooltipText: root.todayTooltip
     labelVisible: !root.vertical
     hasVisualContent: root.vertical ? root.verticalLines.length > 0 : text !== ""
     fixedHeight: root.vertical ? root.verticalLines.length * Style.bar.iconSlot : -1

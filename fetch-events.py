@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-fetch-events.py — Background event fetcher for fred.clock.
+fetch-events.py — Background event fetcher for deoxizn.clock.
 
 Fetches iCalendar (.ics) feeds from secret URLs or local files, expands
 recurring events (RRULE, EXDATE, RDATE), normalizes timezones, and writes
-an atomic JSON cache at ~/.cache/fred.clock/events.json (mode 0600).
+an atomic JSON cache at ~/.cache/deoxizn.clock/events.json (mode 0600).
 
 Pure Python 3 standard library only.
 """
@@ -27,9 +27,17 @@ import urllib.request
 import zoneinfo
 from typing import Any, Iterator
 
-USER_AGENT = "fred.clock/1.3.3 (Omarchy Shell Plugin)"
-DEFAULT_CONFIG_PATH = os.path.expanduser("~/.config/fred.clock/calendars.json")
-DEFAULT_CACHE_PATH = os.path.expanduser("~/.cache/fred.clock/events.json")
+USER_AGENT = "deoxizn.clock/1.0 (Omarchy Shell Plugin)"
+DEFAULT_CONFIG_PATH = os.path.expanduser("~/.config/deoxizn.clock/calendars.json")
+DEFAULT_CACHE_PATH = os.path.expanduser("~/.cache/deoxizn.clock/events.json")
+
+# Rename migration: the 1.3.3 upstream release kept its config under
+# ~/.config/fred.clock/. On first run with no config of our own, copy the
+# legacy file over so existing feeds (and their secret URLs) keep working.
+LEGACY_CONFIG_PATH = os.path.expanduser("~/.config/fred.clock/calendars.json")
+LEGACY_ICS_PATH = os.path.expanduser("~/.config/fred.clock/local.ics")
+NEW_ICS_PATH = os.path.expanduser("~/.config/deoxizn.clock/local.ics")
+SAMPLE_CONFIG_NAME = "calendars.example.json"
 
 # Limits as defined in §5
 MAX_CONFIG_BYTES = 64 * 1024  # 64 KiB
@@ -137,6 +145,67 @@ def write_private_file(directory: str, name: str, data: bytes) -> None:
         raise
     finally:
         os.close(dfd)
+
+
+def seed_config_if_missing(config_path: str) -> None:
+    """First-run setup for calendars.json.
+
+    Omarchy does not run a plugin's setup script on install, so the fetcher
+    seeds the config itself the first time it runs with no config file:
+
+    - legacy fred.clock config exists -> copy it over (rename migration),
+      so existing feeds keep working with no re-entry;
+    - otherwise copy the bundled calendars.example.json sample into place.
+
+    Writes go through write_private_file (0700 dir, 0600 file). A failure
+    here is non-fatal: the run continues with zero feeds.
+    """
+    if os.path.exists(config_path):
+        return
+    source = None
+    if os.path.exists(LEGACY_CONFIG_PATH):
+        source = LEGACY_CONFIG_PATH
+    else:
+        bundled = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), SAMPLE_CONFIG_NAME
+        )
+        if os.path.exists(bundled):
+            source = bundled
+    if source is None:
+        return
+    try:
+        with open(source, "rb") as f:
+            data = f.read(MAX_CONFIG_BYTES + 1)
+        if len(data) > MAX_CONFIG_BYTES:
+            print(
+                f"fetch-events: seed source {source} exceeds MAX_CONFIG_BYTES, skipping",
+                file=sys.stderr,
+            )
+            return
+        write_private_file(
+            os.path.dirname(config_path), os.path.basename(config_path), data
+        )
+        print(f"fetch-events: created {config_path} from {source}", file=sys.stderr)
+    except Exception as e:
+        print(f"fetch-events: failed to seed config {config_path}: {e}", file=sys.stderr)
+
+
+def migrate_legacy_ics() -> None:
+    """Copy a legacy fred.clock local.ics over on first run, if we have none."""
+    if os.path.exists(NEW_ICS_PATH) or not os.path.exists(LEGACY_ICS_PATH):
+        return
+    try:
+        with open(LEGACY_ICS_PATH, "rb") as f:
+            data = f.read()
+        write_private_file(
+            os.path.dirname(NEW_ICS_PATH), os.path.basename(NEW_ICS_PATH), data
+        )
+        print(
+            f"fetch-events: migrated local calendar {LEGACY_ICS_PATH} to {NEW_ICS_PATH}",
+            file=sys.stderr,
+        )
+    except Exception as e:
+        print(f"fetch-events: failed to migrate local calendar: {e}", file=sys.stderr)
 
 
 class _HttpsOnlyRedirect(urllib.request.HTTPRedirectHandler):
@@ -787,7 +856,7 @@ def compute_next_event(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Fetch and cache calendar events for fred.clock")
+    parser = argparse.ArgumentParser(description="Fetch and cache calendar events for deoxizn.clock")
     parser.add_argument("--config", default=DEFAULT_CONFIG_PATH, help="Path to calendars.json")
     parser.add_argument("--output", default=DEFAULT_CACHE_PATH, help="Path to write events.json cache")
     parser.add_argument("--badge-minutes", type=int, default=60, help="Max minutes ahead for countdown badge")
@@ -829,6 +898,13 @@ def main() -> int:
     # Window: past 1 day to next 30 days
     window_start = now_dt - datetime.timedelta(days=1)
     window_end = now_dt + datetime.timedelta(days=30)
+
+    # First run with the default config: seed it (legacy migration or the
+    # bundled sample) so the panel has something to point at. Explicit
+    # --config paths are left alone so tests keep full control.
+    if args.config == DEFAULT_CONFIG_PATH:
+        seed_config_if_missing(args.config)
+        migrate_legacy_ics()
 
     # Load configuration with bounds
     feeds: list[dict[str, Any]] = []

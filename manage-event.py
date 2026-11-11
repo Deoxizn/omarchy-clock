@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-manage-event.py — Local calendar event manager for fred.clock.
+manage-event.py — Local calendar event manager for deoxizn.clock.
 
 Allows adding, deleting, and listing events in a local RFC 5545 .ics file,
 and ensures the local calendar feed is registered in calendars.json.
@@ -18,8 +18,8 @@ import sys
 import uuid
 import zoneinfo
 
-DEFAULT_CONFIG_PATH = os.path.expanduser("~/.config/fred.clock/calendars.json")
-DEFAULT_ICS_PATH = os.path.expanduser("~/.config/fred.clock/local.ics")
+DEFAULT_CONFIG_PATH = os.path.expanduser("~/.config/deoxizn.clock/calendars.json")
+DEFAULT_ICS_PATH = os.path.expanduser("~/.config/deoxizn.clock/local.ics")
 
 # Import helpers and limit constants from sibling fetch-events.py
 _FETCH_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fetch-events.py")
@@ -30,6 +30,8 @@ _fetch_mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_fetch_mod)
 
 write_private_file = _fetch_mod.write_private_file
+seed_config_if_missing = _fetch_mod.seed_config_if_missing
+migrate_legacy_ics = _fetch_mod.migrate_legacy_ics
 MAX_SUMMARY = _fetch_mod.MAX_SUMMARY
 MAX_LOCATION = _fetch_mod.MAX_LOCATION
 MAX_DESCRIPTION = _fetch_mod.MAX_DESCRIPTION
@@ -77,7 +79,7 @@ def ensure_ics_exists(ics_path: str) -> None:
         content = (
             "BEGIN:VCALENDAR\r\n"
             "VERSION:2.0\r\n"
-            "PRODID:-//Fred//fred.clock Local Calendar//EN\r\n"
+            "PRODID:-//Deoxizn//deoxizn.clock Local Calendar//EN\r\n"
             "CALSCALE:GREGORIAN\r\n"
             "METHOD:PUBLISH\r\n"
             "X-WR-CALNAME:Local Calendar\r\n"
@@ -173,7 +175,7 @@ def add_event(
     ensure_config_registered(config_path, ics_path, account=account, color=color)
 
     abs_ics = os.path.abspath(os.path.expanduser(ics_path))
-    event_uid = f"{uuid.uuid4()}@fred.clock"
+    event_uid = f"{uuid.uuid4()}@deoxizn.clock"
     now_utc = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 
     parts = [int(p) for p in date_str.split("-")]
@@ -339,7 +341,7 @@ def validate_args_or_exit(args: argparse.Namespace) -> None:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Manage local events for fred.clock")
+    parser = argparse.ArgumentParser(description="Manage local events for deoxizn.clock")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     # add subcommand
@@ -364,6 +366,13 @@ def main():
 
     args = parser.parse_args()
     validate_args_or_exit(args)
+
+    # Rename migration: with default paths and no config of our own yet,
+    # pull the legacy fred.clock files over first.
+    if args.config == DEFAULT_CONFIG_PATH:
+        seed_config_if_missing(args.config)
+    if args.ics == DEFAULT_ICS_PATH:
+        migrate_legacy_ics()
 
     try:
         if args.command == "add":

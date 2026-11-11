@@ -1,6 +1,8 @@
 # Upstream Provenance
 
-This plugin began life as a clone of the stock Omarchy clock panel widget.
+## This fork
+
+`deoxizn.clock` is a fork of [greenermoose/clock-fred-tamlinux](https://github.com/greenermoose/clock-fred-tamlinux) (`fred.clock` 1.3.3, GPL-3.0-or-later), versioning restarted at 1.0. Fork changes: plugin id/config/cache renamed to `deoxizn.clock`, hover tooltip shows today's events instead of a version stamp, panel version footer removed, first-run config seeding (legacy migration or bundled sample) in `fetch-events.py`. The upstream `docs/ai/` session archive is kept as history.
 
 ## Field surveys
 

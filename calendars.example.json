@@ -16,7 +16,7 @@
   {
     "account": "Local",
     "name": "Local Events",
-    "path": "/home/fred/Documents/calendar.ics",
+    "path": "~/Documents/calendar.ics",
     "color": "#fbbc05",
     "enabled": false
   }

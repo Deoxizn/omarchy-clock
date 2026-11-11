@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Unit tests for fred.clock fetch-events.py.
+Unit tests for deoxizn.clock fetch-events.py.
 Covers recurrence expansion, EXDATE, all-day events, malformed feeds,
 and countdown badge computation.
 """

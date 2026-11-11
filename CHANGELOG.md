@@ -1,6 +1,18 @@
 # Changelog
 
-All notable changes to `fred.clock` (`clock-fred-tamlinux`) will be documented in this file.
+All notable changes to `deoxizn.clock` will be documented in this file. Entries below 1.0 are the upstream `fred.clock` history, kept as-is.
+
+## [1.0] - 2026-11-11
+
+Fork of upstream `fred.clock` 1.3.3 (greenermoose/clock-fred-tamlinux). Versioning restarts at 1.0.
+
+### Changed
+- Plugin id, config dir, and cache dir renamed `fred.clock` → `deoxizn.clock` (`~/.config/deoxizn.clock/`, `~/.cache/deoxizn.clock/`).
+- **Today's-events tooltip**: hovering the clock now shows today's date, each timed event with its start time, and a count of all-day events, instead of a version stamp.
+- **Version badging removed**: the `fred.clock v1.3.3` hover text and the panel footer are gone entirely.
+
+### Added
+- **First-run config seeding**: `fetch-events.py` creates `~/.config/deoxizn.clock/calendars.json` on first run, migrating a legacy `~/.config/fred.clock/calendars.json` (and `local.ics`) when one exists, otherwise copying the bundled `calendars.example.json` sample. Omarchy does not run a plugin's setup script on install, so the fetcher does this itself.
 
 ## [1.3.3] - 2026-09-18
 

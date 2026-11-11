@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-test_limits.py — Comprehensive limit, deadline, validation, and refusal tests for fred.clock.
+test_limits.py — Comprehensive limit, deadline, validation, and refusal tests for deoxizn.clock.
 Stdlib only (unittest).
 """
 
