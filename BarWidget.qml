@@ -12,7 +12,7 @@ import "Model.js" as Model
 // middle click opens the timezone picker.
 BarWidget {
   id: root
-  moduleName: "deoxizn.clock"
+  moduleName: "pizza.dirty.clock"
 
   property date displayDate: clock.date
 
@@ -119,7 +119,7 @@ BarWidget {
 
   FileView {
     id: calendarsConfig
-    path: Quickshell.env("HOME") + "/.config/deoxizn.clock/calendars.json"
+    path: Quickshell.env("HOME") + "/.config/pizza.dirty.clock/calendars.json"
     watchChanges: true
     printErrors: false
     onFileChanged: root.runFetch()
@@ -127,7 +127,7 @@ BarWidget {
 
   FileView {
     id: localIcsWatcher
-    path: Quickshell.env("HOME") + "/.config/deoxizn.clock/local.ics"
+    path: Quickshell.env("HOME") + "/.config/pizza.dirty.clock/local.ics"
     watchChanges: true
     printErrors: false
     onFileChanged: root.runFetch()
@@ -135,7 +135,7 @@ BarWidget {
 
   FileView {
     id: eventsCache
-    path: Quickshell.env("HOME") + "/.cache/deoxizn.clock/events.json"
+    path: Quickshell.env("HOME") + "/.cache/pizza.dirty.clock/events.json"
     watchChanges: true
     printErrors: false
     onFileChanged: reload()
@@ -235,7 +235,7 @@ BarWidget {
 
   function broadcastClock(method) {
     var fn = bar ? (bar.moduleWidgets || bar._moduleWidgets) : null
-    var candidates = [root.moduleName, "deoxizn.clock", "omarchy.clock"]
+    var candidates = [root.moduleName, "pizza.dirty.clock", "omarchy.clock"]
     var items = []
     for (var c = 0; c < candidates.length; c++) {
       if (typeof fn === "function") {
@@ -418,7 +418,7 @@ BarWidget {
   }
 
   IpcHandler {
-    target: "deoxizn.clock"
+    target: "pizza.dirty.clock"
 
     function refresh(): void { root.broadcastClock("refresh") }
     function cycleFormat(): void { root.cycleFormat() }

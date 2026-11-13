@@ -17,8 +17,8 @@ import "Model.js" as Model
 // anchor against.
 Panel {
   id: root
-  moduleName: "deoxizn.clock"
-  ipcTarget: "deoxizn.clock"
+  moduleName: "pizza.dirty.clock"
+  ipcTarget: "pizza.dirty.clock"
   manageIpc: false
 
   property var anchorItem: null
@@ -134,7 +134,7 @@ Panel {
 
   FileView {
     id: eventsCache
-    path: Quickshell.env("HOME") + "/.cache/deoxizn.clock/events.json"
+    path: Quickshell.env("HOME") + "/.cache/pizza.dirty.clock/events.json"
     watchChanges: true
     printErrors: false
     onFileChanged: reload()

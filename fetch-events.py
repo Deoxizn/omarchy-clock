@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-fetch-events.py — Background event fetcher for deoxizn.clock.
+fetch-events.py — Background event fetcher for pizza.dirty.clock.
 
 Fetches iCalendar (.ics) feeds from secret URLs or local files, expands
 recurring events (RRULE, EXDATE, RDATE), normalizes timezones, and writes
-an atomic JSON cache at ~/.cache/deoxizn.clock/events.json (mode 0600).
+an atomic JSON cache at ~/.cache/pizza.dirty.clock/events.json (mode 0600).
 
 Pure Python 3 standard library only.
 """
@@ -27,16 +27,16 @@ import urllib.request
 import zoneinfo
 from typing import Any, Iterator
 
-USER_AGENT = "deoxizn.clock/1.0.1 (Omarchy Shell Plugin)"
-DEFAULT_CONFIG_PATH = os.path.expanduser("~/.config/deoxizn.clock/calendars.json")
-DEFAULT_CACHE_PATH = os.path.expanduser("~/.cache/deoxizn.clock/events.json")
+USER_AGENT = "pizza.dirty.clock/1.0.1 (Omarchy Shell Plugin)"
+DEFAULT_CONFIG_PATH = os.path.expanduser("~/.config/pizza.dirty.clock/calendars.json")
+DEFAULT_CACHE_PATH = os.path.expanduser("~/.cache/pizza.dirty.clock/events.json")
 
 # Rename migration: the 1.3.3 upstream release kept its config under
 # ~/.config/fred.clock/. On first run with no config of our own, copy the
 # legacy file over so existing feeds (and their secret URLs) keep working.
 LEGACY_CONFIG_PATH = os.path.expanduser("~/.config/fred.clock/calendars.json")
 LEGACY_ICS_PATH = os.path.expanduser("~/.config/fred.clock/local.ics")
-NEW_ICS_PATH = os.path.expanduser("~/.config/deoxizn.clock/local.ics")
+NEW_ICS_PATH = os.path.expanduser("~/.config/pizza.dirty.clock/local.ics")
 SAMPLE_CONFIG_NAME = "calendars.example.json"
 
 # Limits as defined in §5
@@ -856,7 +856,7 @@ def compute_next_event(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Fetch and cache calendar events for deoxizn.clock")
+    parser = argparse.ArgumentParser(description="Fetch and cache calendar events for pizza.dirty.clock")
     parser.add_argument("--config", default=DEFAULT_CONFIG_PATH, help="Path to calendars.json")
     parser.add_argument("--output", default=DEFAULT_CACHE_PATH, help="Path to write events.json cache")
     parser.add_argument("--badge-minutes", type=int, default=60, help="Max minutes ahead for countdown badge")

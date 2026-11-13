@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-test_limits.py — Comprehensive limit, deadline, validation, and refusal tests for deoxizn.clock.
+test_limits.py — Comprehensive limit, deadline, validation, and refusal tests for pizza.dirty.clock.
 Stdlib only (unittest).
 """
 

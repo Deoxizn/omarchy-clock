@@ -1,4 +1,4 @@
-# deoxizn.clock — Clock with Today's Events on Hover
+# pizza.dirty.clock — Clock with Today's Events on Hover
 
 A shell bar clock for Omarchy that replaces the stock `omarchy.clock` widget. Hovering it shows today's agenda instead of a version stamp. Clicking it opens the month grid with a day agenda, countdown badge, and multi-calendar sync.
 
@@ -17,7 +17,7 @@ A shell bar clock for Omarchy that replaces the stock `omarchy.clock` widget. Ho
 | **Account filter chips** | Filter the agenda by account (`All`, `Personal`, `Work`, etc.). |
 | **1-click meeting join** | Detects Google Meet, Zoom, Teams, and Webex links and renders Join buttons. |
 | **Markdown copy** | Copy the selected day's agenda as structured Markdown (`y` hotkey or toolbar button). |
-| **Local events** | Create and delete private local events from the UI or CLI. Stored as standard RFC 5545 `.ics` at `~/.config/deoxizn.clock/local.ics`. |
+| **Local events** | Create and delete private local events from the UI or CLI. Stored as standard RFC 5545 `.ics` at `~/.config/pizza.dirty.clock/local.ics`. |
 
 ## Installation
 
@@ -38,14 +38,14 @@ omarchy plugin add https://github.com/Deoxizn/omarchy-clock.git --enable --yes
 Omarchy does not rewrite the bar center anchor when a clone is enabled, so point it at the new widget in `~/.config/omarchy/shell.json`:
 
 ```bash
-sed -i 's/"centerAnchor": "fred.clock"/"centerAnchor": "deoxizn.clock"/' ~/.config/omarchy/shell.json
+sed -i 's/"centerAnchor": "fred.clock"/"centerAnchor": "pizza.dirty.clock"/' ~/.config/omarchy/shell.json
 ```
 
 (If you are coming from the stock clock instead, replace `omarchy.clock` in that command.) Restart the shell after installing.
 
 ## Configuration
 
-Calendar feeds live in `~/.config/deoxizn.clock/calendars.json` (permissions `0600`).
+Calendar feeds live in `~/.config/pizza.dirty.clock/calendars.json` (permissions `0600`).
 
 **You do not have to create this file.** On first run the fetcher seeds it for you: if a legacy `~/.config/fred.clock/calendars.json` exists it is copied over with your feeds intact, otherwise the bundled `calendars.example.json` sample is copied in. Edit the URLs in place and save; the widget watches the file and refetches immediately.
 
@@ -100,19 +100,19 @@ Public `.ics` URLs work too, but only for calendars that are actually public. A 
 
 Events are pulled and cached automatically in the background. No terminal commands or daemon setups are required:
 
-- **Instant on save**: The bar widget watches `~/.config/deoxizn.clock/calendars.json`. Saving changes triggers an immediate background fetch.
+- **Instant on save**: The bar widget watches `~/.config/pizza.dirty.clock/calendars.json`. Saving changes triggers an immediate background fetch.
 - **Periodic background sync**: All enabled feeds refresh every 15 minutes.
 - **On panel open**: Opening the calendar panel refreshes events if the cache is older than 5 minutes.
 - **Shell startup**: Fetches automatically whenever the desktop session initializes.
 - **Manual (optional)**: Force a refresh from the terminal:
 
 ```bash
-python3 ~/.config/omarchy/plugins/deoxizn.clock/fetch-events.py
+python3 ~/.config/omarchy/plugins/pizza.dirty.clock/fetch-events.py
 ```
 
 ## Managing local events
 
-Create and manage private local calendar events without external Google Calendar dependencies. Events are stored in standard RFC 5545 format at `~/.config/deoxizn.clock/local.ics` (permissions `0600`) and automatically registered under the `"Local"` account. A legacy `~/.config/fred.clock/local.ics` is migrated on first run.
+Create and manage private local calendar events without external Google Calendar dependencies. Events are stored in standard RFC 5545 format at `~/.config/pizza.dirty.clock/local.ics` (permissions `0600`) and automatically registered under the `"Local"` account. A legacy `~/.config/fred.clock/local.ics` is migrated on first run.
 
 ### From the user interface
 
@@ -124,16 +124,16 @@ Create and manage private local calendar events without external Google Calendar
 
 ```bash
 # Add an all-day local event
-python3 ~/.config/omarchy/plugins/deoxizn.clock/manage-event.py add --date 2026-11-15 --summary "Doctor's Appointment" --all-day
+python3 ~/.config/omarchy/plugins/pizza.dirty.clock/manage-event.py add --date 2026-11-15 --summary "Doctor's Appointment" --all-day
 
 # Add a timed local event with location
-python3 ~/.config/omarchy/plugins/deoxizn.clock/manage-event.py add --date 2026-11-15 --start-time 14:00 --end-time 15:30 --summary "Design Review" --location "Office 3B"
+python3 ~/.config/omarchy/plugins/pizza.dirty.clock/manage-event.py add --date 2026-11-15 --start-time 14:00 --end-time 15:30 --summary "Design Review" --location "Office 3B"
 
 # Delete a local event by UID
-python3 ~/.config/omarchy/plugins/deoxizn.clock/manage-event.py delete --uid "<event-uid>"
+python3 ~/.config/omarchy/plugins/pizza.dirty.clock/manage-event.py delete --uid "<event-uid>"
 
 # Or trigger creation directly via Omarchy Shell IPC:
-omarchy-shell deoxizn.clock createEvent "Sprint Planning" "2026-11-15" "false" "10:00" "11:00" "Conference Room"
+omarchy-shell pizza.dirty.clock createEvent "Sprint Planning" "2026-11-15" "false" "10:00" "11:00" "Conference Room"
 ```
 
 ## Bar settings
@@ -167,7 +167,7 @@ Inline widget settings in `~/.config/omarchy/shell.json`:
 
 ## Security model
 
-`deoxizn.clock` runs inside the Quickshell desktop shell environment. All process executions, network interactions, and filesystem writes adhere to a strict least-privilege security model designed to resist malicious feeds, unbounded resource consumption, and ambient environment leakage.
+`pizza.dirty.clock` runs inside the Quickshell desktop shell environment. All process executions, network interactions, and filesystem writes adhere to a strict least-privilege security model designed to resist malicious feeds, unbounded resource consumption, and ambient environment leakage.
 
 ### Supervised process execution
 
@@ -212,20 +212,20 @@ To prevent memory exhaustion, slow-drip HTTP attacks, or calendar recurrence bom
 
 All cache and configuration file writes go through `write_private_file`:
 
-- **Directory validation**: The target directory (`~/.cache/deoxizn.clock` or `~/.config/deoxizn.clock`) must be a private, self-owned directory (`st_uid == getuid()`, mode `0700`, no group/other write permissions). Parent directories must not be group/other-writable unless the sticky bit is set.
+- **Directory validation**: The target directory (`~/.cache/pizza.dirty.clock` or `~/.config/pizza.dirty.clock`) must be a private, self-owned directory (`st_uid == getuid()`, mode `0700`, no group/other write permissions). Parent directories must not be group/other-writable unless the sticky bit is set.
 - **Atomic replacement**: Content is written to a temporary file in the same directory (`O_EXCL`, `O_NOFOLLOW`), `fsync`ed, and then renamed over the destination so readers never observe a torn write.
 - **Permission enforcement**: All files are created with mode `0600`.
 
 ## Uninstall
 
-To remove `deoxizn.clock` and restore the default stock clock:
+To remove `pizza.dirty.clock` and restore the default stock clock:
 
 ```bash
-sed -i 's/"centerAnchor": "deoxizn.clock"/"centerAnchor": "omarchy.clock"/' ~/.config/omarchy/shell.json
-omarchy plugin remove deoxizn.clock
+sed -i 's/"centerAnchor": "pizza.dirty.clock"/"centerAnchor": "omarchy.clock"/' ~/.config/omarchy/shell.json
+omarchy plugin remove pizza.dirty.clock
 ```
 
-Your feeds stay in `~/.config/deoxizn.clock/calendars.json` if you ever reinstall.
+Your feeds stay in `~/.config/pizza.dirty.clock/calendars.json` if you ever reinstall.
 
 ## License
 
