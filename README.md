@@ -22,16 +22,22 @@ Then restart the shell.
 
 - **Hover:** today's events and times.
 - **Click:** month grid. Click a day to see its events. Click a Join button to jump into a meeting.
-- **Right-click:** settings. Add calendars there, no file editing needed.
+- **Right-click:** calendar settings. Same list as the bar settings window's Calendar tab.
 - **Middle-click:** timezone picker.
 
 A badge next to the clock counts down to your next event (within 60 minutes).
 
 ### Calendars
 
-Right-click the clock, then paste an iCal link (`https://` or `webcal://`) or a local `.ics` file path.
+Right-click the clock to open calendar settings, or open the Nyxiri settings window (bat button on the bar) and pick the **Calendar** tab. Same list, same controls, no file editing needed.
+
+Each calendar shows its name, an on/off toggle, and a **Remove** button. Remote links stay hidden behind a per-row eye toggle; local file paths show as-is.
+
+To add one, fill in a name, paste an iCal link (`https://` or `webcal://`) or a local `.ics` file path, and hit **Add calendar**. Account is optional (defaults to Personal). Plain `http://` links are refused.
 
 For Google Calendar: Settings (gear icon) > pick a calendar > Integrate calendar > copy the **Secret address in iCal format** link.
+
+Calendars live in `~/.config/pizza.dirty.clock/calendars.json`; the clock watches that file and refetches when it changes, so saving in either settings UI is the refresh. The clock's display settings (`format`, `formatAlt`, `badgeMinutes`) are not in either settings UI, they stay in `shell.json` (see Settings below). Right-click used to cycle the clock format; that is still available over IPC (`omarchy.clock cycleFormat`), it just has no mouse trigger now.
 
 ### Local events
 
