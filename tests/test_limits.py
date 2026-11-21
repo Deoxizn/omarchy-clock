@@ -182,7 +182,10 @@ class TestLimitsAndSecurity(unittest.TestCase):
         res = self._run_fetch()
         self.assertEqual(res.returncode, 0)
         self.assertIn("refusing non-HTTPS", res.stderr)
-        self.assertIn("http://example.com/cal.ics", res.stderr)
+        # The offending URL is a secret (private Google Calendar token);
+        # validation errors never echo it, so only the feed name is logged.
+        self.assertIn("HttpFeed", res.stderr)
+        self.assertNotIn("http://example.com/cal.ics", res.stderr)
 
         # Cross-scheme redirect (HTTPS -> HTTP)
         class RedirectHandler(http.server.BaseHTTPRequestHandler):

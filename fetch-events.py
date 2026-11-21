@@ -707,7 +707,9 @@ def fetch_feed(
                 raw_url = "https://" + raw_url[len("webcal://"):]
             parsed_u = urllib.parse.urlparse(raw_url)
             if parsed_u.scheme.lower() != "https":
-                print(f"fetch-events: refusing non-HTTPS feed URL: {raw_url}", file=sys.stderr)
+                # Validation errors never echo the offending value, so a
+                # secret URL is never logged; name the feed only.
+                print(f"fetch-events: refusing non-HTTPS feed URL for feed '{cal_name}'", file=sys.stderr)
                 return []
 
             opener = urllib.request.build_opener(_HttpsOnlyRedirect())
@@ -958,8 +960,11 @@ def main() -> int:
                                         raw_url = "https://" + raw_url[len("webcal://"):]
                                     parsed_u = urllib.parse.urlparse(raw_url)
                                     if parsed_u.scheme.lower() != "https":
+                                        # Validation errors never echo the
+                                        # offending value, so a secret URL is
+                                        # never logged; name the feed only.
                                         print(
-                                            f"fetch-events: refusing non-HTTPS feed URL: {raw_url}",
+                                            f"fetch-events: refusing non-HTTPS feed URL for feed '{validated_feed['name']}'",
                                             file=sys.stderr,
                                         )
                                         continue
