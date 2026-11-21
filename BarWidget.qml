@@ -297,6 +297,19 @@ BarWidget {
     if (panelLoader.item) panelLoader.item.toggleWeekStart()
   }
 
+  // Standalone settings: right-click the clock opens the ClockSettings
+  // window. It is the same controls as the bar's settings window Calendar
+  // tab (the clock is the calendar, basically), so the plugin is usable
+  // on its own (stock bar, no Nyxiri bar), where there is no bar settings
+  // window. Right-click used to cycle the label format; that is still
+  // available over IPC (omarchy.clock cycleFormat), it just no longer has
+  // a mouse trigger.
+  property bool settingsOpen: false
+
+  function toggleSettings() {
+    root.settingsOpen = !root.settingsOpen
+  }
+
   // The clock fills more slot than it paints a mark for, at both
   // orientations: horizontally it is a text label in a padded slot, so the
   // dot takes the label width; vertically it is a stack of icon-sized lines,
@@ -343,6 +356,18 @@ BarWidget {
     onLoaded: {
       root.injectPanel()
       Qt.callLater(root.injectPanel)
+    }
+  }
+
+  // The standalone settings window, one per bar surface. It opens on
+  // right-click and closes from its own Close button or Escape.
+  ClockSettings {
+    bar: root.bar
+    hostWidget: root
+    visible: root.settingsOpen
+    screen: {
+      var window = root.QsWindow.window
+      return window ? window.screen : null
     }
   }
 
@@ -454,7 +479,9 @@ BarWidget {
     verticalPadding: 8.75
 
     onPressed: function(b) {
-      if (b === Qt.RightButton) root.cycleFormat()
+      // Right-click opens the standalone settings window (the Calendar
+      // tab's controls); it no longer cycles the label format.
+      if (b === Qt.RightButton) { root.toggleSettings(); return }
       else if (b === Qt.MiddleButton) { if (root.bar) root.bar.run("omarchy-menu-timezone") }
       else root.togglePanel()
     }
