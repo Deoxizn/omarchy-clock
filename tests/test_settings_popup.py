@@ -48,7 +48,7 @@ class TestClockSettingsPopup(unittest.TestCase):
         )
         # Left-click still toggles the calendar panel, middle-click still
         # opens the timezone picker.
-        self.assertIn('root.bar.run("omarchy-menu-timezone")', widget)
+        self.assertIn('root.bar.run("hexciri-menu-timezone")', widget)
         self.assertIn("else root.togglePanel()", widget)
 
     def test_right_click_no_longer_cycles_format(self):

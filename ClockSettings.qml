@@ -63,7 +63,7 @@ PanelWindow {
   // the links are secret, so each row masks its link like a password
   // field and only reveals one when its eye toggle is tapped.
   readonly property string calendarsPath: (Quickshell.env("HOME") || "") + "/.config/pizza.dirty.clock/calendars.json"
-  readonly property string calendarsScript: (Quickshell.env("HOME") || "") + "/.config/omarchy/plugins/pizza.dirty.clock/scripts/write-calendars.py"
+  readonly property string calendarsScript: (Quickshell.env("HOME") || "") + "/.config/hexciri/plugins/pizza.dirty.clock/scripts/write-calendars.py"
   property var calendars: []
   property var calendarsBeforeSave: []
   property string calendarsStatus: ""

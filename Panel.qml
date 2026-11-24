@@ -250,7 +250,7 @@ Panel {
 
   Launch {
     id: notifyProc
-    exe: root.omarchyPath !== "" ? root.omarchyPath + "/bin/omarchy-notification-send" : ""
+    exe: root.omarchyPath !== "" ? root.omarchyPath + "/bin/hexciri-notification-send" : ""
     envKeys: root.notifyEnv
     deadlineMs: 10000
   }

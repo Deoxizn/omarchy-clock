@@ -98,7 +98,7 @@ BarWidget {
 
   Launch {
     id: notifyProc
-    exe: root.omarchyPath !== "" ? root.omarchyPath + "/bin/omarchy-notification-send" : ""
+    exe: root.omarchyPath !== "" ? root.omarchyPath + "/bin/hexciri-notification-send" : ""
     envKeys: root.notifyEnv
     deadlineMs: 10000
   }
@@ -235,7 +235,7 @@ BarWidget {
 
   function broadcastClock(method) {
     var fn = bar ? (bar.moduleWidgets || bar._moduleWidgets) : null
-    var candidates = [root.moduleName, "pizza.dirty.clock", "omarchy.clock"]
+    var candidates = [root.moduleName, "pizza.dirty.clock"]
     var items = []
     for (var c = 0; c < candidates.length; c++) {
       if (typeof fn === "function") {
@@ -302,7 +302,7 @@ BarWidget {
   // tab (the clock is the calendar, basically), so the plugin is usable
   // on its own (stock bar, no Nyxiri bar), where there is no bar settings
   // window. Right-click used to cycle the label format; that is still
-  // available over IPC (omarchy.clock cycleFormat), it just no longer has
+  // available over IPC (pizza.dirty.clock cycleFormat), it just no longer has
   // a mouse trigger.
   property bool settingsOpen: false
 
@@ -372,7 +372,7 @@ BarWidget {
   }
 
   IpcHandler {
-    target: "omarchy.clock"
+    target: "pizza.dirty.clock"
 
     function refresh(): void { root.broadcastClock("refresh") }
     function cycleFormat(): void { root.cycleFormat() }
@@ -482,7 +482,7 @@ BarWidget {
       // Right-click opens the standalone settings window (the Calendar
       // tab's controls); it no longer cycles the label format.
       if (b === Qt.RightButton) { root.toggleSettings(); return }
-      else if (b === Qt.MiddleButton) { if (root.bar) root.bar.run("omarchy-menu-timezone") }
+      else if (b === Qt.MiddleButton) { if (root.bar) root.bar.run("hexciri-menu-timezone") }
       else root.togglePanel()
     }
 
