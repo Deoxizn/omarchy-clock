@@ -10,8 +10,9 @@ import qs.Ui
 // Standalone clock settings. A floating layer-shell window with the
 // same controls as the bar's settings window Calendar tab, for when the
 // clock plugin runs on its own (stock Omarchy bar, no Nyxiri bar), where
-// there is no bar settings window to open. Opened by right-clicking the
-// clock widget; the widget's toggleSettings() flips it.
+// there is no bar settings window to open. Opened by
+// Shift+right-clicking the clock widget (a plain right-click cycles the
+// label format); the widget's toggleSettings() flips it.
 // The clock is the calendar, basically: this tab IS the clock's settings.
 // It lists the clock's calendars, adds one from an iCal / .ics link or a
 // local .ics file, and removes one, writing calendars.json through the
@@ -503,6 +504,14 @@ PanelWindow {
         bordered: true
         foreground: popup.bar.foreground
         onClicked: popup.closeSettings()
+      }
+
+      BodyText {
+        width: body.width
+        text: "Right-click the clock cycles its format; Shift+right-click opens this window."
+        color: Qt.darker(popup.bar.foreground, 1.35)
+        font.pixelSize: Style.font.caption
+        wrapMode: Text.WordWrap
       }
     }
   }

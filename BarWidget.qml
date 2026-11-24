@@ -297,13 +297,14 @@ BarWidget {
     if (panelLoader.item) panelLoader.item.toggleWeekStart()
   }
 
-  // Standalone settings: right-click the clock opens the ClockSettings
-  // window. It is the same controls as the bar's settings window Calendar
-  // tab (the clock is the calendar, basically), so the plugin is usable
-  // on its own (stock bar, no Nyxiri bar), where there is no bar settings
-  // window. Right-click used to cycle the label format; that is still
-  // available over IPC (pizza.dirty.clock cycleFormat), it just no longer has
-  // a mouse trigger.
+  // Standalone settings: Shift+right-click the clock opens the
+  // ClockSettings window. It is the same controls as the bar's settings
+  // window Calendar tab (the clock is the calendar, basically), so the
+  // plugin is usable on its own (stock bar, no Nyxiri bar), where there
+  // is no bar settings window. A plain right-click cycles the label
+  // format again (2026-11-24, Devi: the settings popup stole the
+  // right-click that used to swap formats); the cycle is also available
+  // over IPC (pizza.dirty.clock cycleFormat).
   property bool settingsOpen: false
 
   function toggleSettings() {
@@ -360,7 +361,7 @@ BarWidget {
   }
 
   // The standalone settings window, one per bar surface. It opens on
-  // right-click and closes from its own Close button or Escape.
+  // Shift+right-click and closes from its own Close button or Escape.
   ClockSettings {
     bar: root.bar
     hostWidget: root
@@ -478,10 +479,15 @@ BarWidget {
     horizontalMargin: 8.75
     verticalPadding: 8.75
 
-    onPressed: function(b) {
-      // Right-click opens the standalone settings window (the Calendar
-      // tab's controls); it no longer cycles the label format.
-      if (b === Qt.RightButton) { root.toggleSettings(); return }
+    // WidgetButton forwards the click modifiers (fork patch,
+    // hexciri v2/install.sh), so Shift+right-click is distinguishable
+    // from a plain right-click. Plain right-click cycles the label
+    // format; Shift+right-click opens the standalone settings window.
+    onPressed: function(b, modifiers) {
+      if (b === Qt.RightButton) {
+        if (modifiers & Qt.ShiftModifier) { root.toggleSettings(); return }
+        root.cycleFormat(); return
+      }
       else if (b === Qt.MiddleButton) { if (root.bar) root.bar.run("hexciri-menu-timezone") }
       else root.togglePanel()
     }

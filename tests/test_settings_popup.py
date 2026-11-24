@@ -35,7 +35,21 @@ def read(name):
 
 
 class TestClockSettingsPopup(unittest.TestCase):
-    def test_right_click_opens_settings(self):
+    def test_right_click_cycles_format(self):
+        # 2026-11-24, Devi: right-click used to cycle the clock format
+        # and the settings popup stole it. A plain right-click cycles
+        # again; Shift+right-click opens settings instead.
+        widget = read("BarWidget.qml")
+        self.assertIn("function cycleFormat()", widget)
+        self.assertIn("function cycleFormat(): void { root.cycleFormat() }", widget)
+        self.assertIn("onPressed: function(b, modifiers)", widget)
+        self.assertIn("root.cycleFormat(); return", widget)
+        self.assertNotIn(
+            "if (b === Qt.RightButton) { root.toggleSettings(); return }",
+            widget,
+        )
+
+    def test_shift_right_click_opens_settings(self):
         widget = read("BarWidget.qml")
         self.assertIn("property bool settingsOpen: false", widget)
         self.assertIn("function toggleSettings()", widget)
@@ -43,20 +57,18 @@ class TestClockSettingsPopup(unittest.TestCase):
         self.assertIn("ClockSettings {", widget)
         self.assertIn("visible: root.settingsOpen", widget)
         self.assertIn(
-            "if (b === Qt.RightButton) { root.toggleSettings(); return }",
+            "if (modifiers & Qt.ShiftModifier) { root.toggleSettings(); return }",
             widget,
         )
         # Left-click still toggles the calendar panel, middle-click still
         # opens the timezone picker.
         self.assertIn('root.bar.run("hexciri-menu-timezone")', widget)
         self.assertIn("else root.togglePanel()", widget)
-
-    def test_right_click_no_longer_cycles_format(self):
-        widget = read("BarWidget.qml")
-        self.assertNotIn("if (b === Qt.RightButton) root.cycleFormat()", widget)
-        # The format cycle itself still exists, over IPC only.
-        self.assertIn("function cycleFormat()", widget)
-        self.assertIn("function cycleFormat(): void { root.cycleFormat() }", widget)
+        popup = read("ClockSettings.qml")
+        self.assertIn(
+            "Right-click the clock cycles its format; Shift+right-click opens this window.",
+            popup,
+        )
 
     def test_popup_mirrors_calendar_tab(self):
         popup = read("ClockSettings.qml")
